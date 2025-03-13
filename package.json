@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/nikola04/store-api#readme",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "eslint": "^9.22.0",
@@ -44,6 +45,10 @@
     "typescript-eslint": "^8.26.1"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "cors": "^2.8.5",
+    "cron": "^4.1.0",
+    "easy-token-auth": "^1.2.1",
+    "express": "^4.21.2",
+    "mongoose": "^8.12.1"
   }
 }
