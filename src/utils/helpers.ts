@@ -7,6 +7,7 @@ import { User, UserData } from '@/models/user.types';
  */
 export const toUserData = (user: User): UserData => {
     return {
+        id: user.id,
         name: user.name,
         email: user.email,
         created_at: user.created_at,

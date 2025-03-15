@@ -3,7 +3,7 @@ import { Login } from './login.types';
 
 const loginSchema = new Schema<Login>({
     user_id: { type: Schema.Types.ObjectId, required: true },
-    token_id: { type: String, required: true },
+    token_id: { type: Schema.Types.ObjectId, required: true },
     ip: { type: String, default: null },
     location: {
         lat: { type: Number, default: null },
