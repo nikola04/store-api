@@ -19,7 +19,14 @@ export default [
     rules: {
       // Pravila za TypeScript
       "@typescript-eslint/explicit-function-return-type": "warn", // Zahteva eksplicitne tipove povratnih vrednosti funkcija
-      "@typescript-eslint/no-unused-vars": "warn", // Upozorava na nekorišćene promenljive
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+            "argsIgnorePattern": "^_",  // Ignoriši neiskorišćene argumente koji počinju sa _
+            "varsIgnorePattern": "^_",  // Ignoriši neiskorišćene promenljive koje počinju sa _
+            "caughtErrorsIgnorePattern": "^_"  // Ignoriši neiskorišćene catch promenljive koje počinju sa _
+        }
+      ],
       "@typescript-eslint/no-explicit-any": "warn", // Upozorava na korišćenje `any` tipa
 
       // Opšta pravila
@@ -27,7 +34,14 @@ export default [
       "semi": ["error", "always"], // Zahteva tačku-zarez na kraju izraza
       "indent": ["error", 4], // Uvlačenje od 4 razmaka
       "no-console": "off", // Upozorava na korišćenje `console.log`
-      "no-unused-vars": "off", // Isključuje ESLint-ovo pravilo za nekorišćene promenljive (koristi TypeScript-ovo umesto toga)
+      "no-unused-vars": [
+        "error",
+        {
+            "argsIgnorePattern": "^_",  // Ignoriši neiskorišćene argumente koji počinju sa _
+            "varsIgnorePattern": "^_",  // Ignoriši neiskorišćene promenljive koje počinju sa _
+            "caughtErrorsIgnorePattern": "^_"  // Ignoriši neiskorišćene catch promenljive koje počinju sa _
+        }
+      ],
       "prefer-const": "error", // Preporučuje korišćenje `const` umesto `let` gde god je moguće
       "eqeqeq": ["error", "always"], // Zahteva strogu jednakost (`===` umesto `==`)
       "no-trailing-spaces": "error", // Zabranjuje prazne prostore na kraju linija

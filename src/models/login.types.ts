@@ -9,7 +9,7 @@ export interface Location {
 
 export interface Login {
     user_id: Schema.Types.ObjectId;
-    hashed_token: string;
+    token_id: Schema.Types.ObjectId;
     ip: string;
     location: Location
     created_at: Date;
