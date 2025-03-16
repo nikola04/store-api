@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import routes from './routes';
+import cookieParser from 'cookie-parser';
 import { getAllowedOrigins } from './utils/cors';
 import { extractHeaders } from './middlewares/headers';
 import { connect } from './configs/database';
@@ -13,8 +14,10 @@ const origins = getAllowedOrigins();
 app.use(cors({
     origin: origins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(extractHeaders({ device: true, authorization: true }));

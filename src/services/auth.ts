@@ -7,9 +7,9 @@ import { toUserData } from '@/utils/helpers';
 import bcrypt from 'bcrypt';
 
 export enum LoginError {
-    EMAIL_NOT_FOUND,
-    NO_PASSWORD,
-    INVALID_PASSWORD
+    EMAIL_NOT_FOUND = 'email_not_found',
+    NO_PASSWORD = 'no_password',
+    INVALID_PASSWORD = 'invalid_password'
 }
 export const loginUser = async (email: string, password: string, { userAgent, userIp }: { userAgent: string, userIp?: string }): Promise<{
     user: UserData;
@@ -42,7 +42,7 @@ export const loginUser = async (email: string, password: string, { userAgent, us
 };
 
 export enum RegisterError {
-    EMAIL_ALREADY_REGISTERED
+    EMAIL_ALREADY_REGISTERED = 'email_already_registered'
 }
 export const registerUser = async(name: string, email: string, password: string, { userAgent, userIp }: { userAgent: string, userIp?: string }): Promise<{
     user: UserData;
