@@ -1,13 +1,13 @@
 import { REFRESH_TOKEN_PATH } from '@/constants/path';
-import { LoginError, loginUser } from '@/services/auth';
+import { RegisterError, registerUser } from '@/services/auth.service';
 import { authConfig } from '@/utils/auth';
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 
-export const login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body as { email: string, password: string };
+export const register = async (req: Request, res: Response): Promise<void> => {
+    const { name, email, password } = req.body as { name: string, email: string, password: string };
     try{
-        const { user, access_token, refresh_token } = await loginUser(email, password, {
+        const { user, access_token, refresh_token } = await registerUser(name, email, password, {
             userAgent: req.device.user_agent,
             userIp: req.device.ip
         });
@@ -27,13 +27,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         });
         res.json({ status: 'OK', user, access_token, csrf_token: csrfToken });
     }catch(err){
-        if(err === LoginError.EMAIL_NOT_FOUND || err === LoginError.INVALID_PASSWORD){
-            res.status(404).json({ message: 'Incorrect email or password' });
-        }else if(err === LoginError.NO_PASSWORD){
-            res.status(404).json({ message: 'Account is linked and doesn\'t have password' });
+        if(err === RegisterError.EMAIL_ALREADY_REGISTERED){
+            res.status(405).json({ message: 'Email is already registered' });
         }else {
             res.status(500).json({ message: 'Internal server error' });
-            console.error('Login error:', err);
+            console.error('Register error:', err);
         }
     }
 };

@@ -20,7 +20,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(extractHeaders({ device: true, authorization: true }));
+app.use(extractHeaders({ device: true, authorization: true })); // when modified, modify types in express.d.ts
 app.use('/', routes);
 
 const startServer = async (): Promise<void> => {

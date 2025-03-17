@@ -10,9 +10,15 @@ interface Authorization {
     access_token?: string;
 }
 
+interface BaseRequest { // Both must be included in extractHeaders middleware
+    device: Device;
+    authorization: Authorization;
+}
+
 declare namespace Express {
-    export interface Request {
-        device: Device;
-        authorization?: Authorization;
-    }
+    interface Request extends BaseRequest {
+        user?: {
+            id: string;
+        }
+    };
 }

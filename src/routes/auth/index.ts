@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import loginRoute from './login';
-import registerRoute from './register';
-import refreshRoute from './refresh';
+import { validateLoginInput } from '@/middlewares/validators/login';
+import { validateRegisterInput } from '@/middlewares/validators/register';
+import { register } from '@/controllers/auth/register.controller';
+import { refresh } from '@/controllers/auth/refresh.controller';
+import { login } from '@/controllers/auth/login.controller';
 
 const router = Router();
 
-router.use('/login', loginRoute);
-router.use('/register', registerRoute);
-router.use('/refresh', refreshRoute);
+router.post('/login', validateLoginInput, login);
+router.post('/register', validateRegisterInput, register);
+router.post('/refresh', refresh);
 
 export default router;
