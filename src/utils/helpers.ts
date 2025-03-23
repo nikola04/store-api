@@ -33,13 +33,12 @@ export const getLoginDevice = (userAgent: string): DeviceOS|null => {
     const parser = new UAParser(userAgent);
     const os = parser.getOS();
     const osName = os.name?.toLowerCase();
-    console.log(osName);
 
     switch (osName) {
     case 'windows':
         return 'Windows';
     case 'macos':
-        return 'Mac';
+        return 'MacOS';
     case 'ios':
         return 'IOS';
     case 'android':

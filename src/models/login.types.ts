@@ -7,7 +7,7 @@ export interface Location {
     country?: string;
 }
 
-export type DeviceOS = 'Mac'|'Windows'|'IOS'|'Android'|'Linux'|'ChromeOS'
+export type DeviceOS = 'MacOS'|'Windows'|'IOS'|'Android'|'Linux'|'ChromeOS'
 export interface Login {
     user_id: Schema.Types.ObjectId;
     token_id: Schema.Types.ObjectId;
