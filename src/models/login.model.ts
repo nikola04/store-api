@@ -5,12 +5,14 @@ const loginSchema = new Schema<Login>({
     user_id: { type: Schema.Types.ObjectId, required: true },
     token_id: { type: Schema.Types.ObjectId, required: true },
     ip: { type: String, default: null },
+    device_type: { type: String, default: null },
     location: {
         lat: { type: Number, default: null },
         lon: { type: Number, default: null },
         city: { type: String, default: null },
         country: { type: String, default: null },
     },
+    logged_out: { type: Boolean, default: false },
     created_at: { type: Date, default: Date.now },
 });
 

@@ -3,7 +3,7 @@ import { Config, createAuthHandler, generateCredentials } from 'easy-token-auth'
 
 export const authConfig: Config = {
     refresh_token: { expiry: 2592000 /* 30 days */ },
-    access_token: { expiry: 1800 /* 30 minutes */ },
+    access_token: { expiry: 600 /* 10 minutes */ },
     credentials_limit: 5
 };
 

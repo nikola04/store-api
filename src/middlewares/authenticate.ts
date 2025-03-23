@@ -11,8 +11,18 @@ export interface AuthenticatedRequest extends Request {
 export const authenticate = () => {
     return (req: Request, res: Response, next: NextFunction): void => {
         const token = req.authorization?.access_token;
+        const csrfCookie = req.cookies.csrf_token;
+        const csrfQuery = req.query.csrf;
         if (!token) {
             res.status(401).json({ message: 'No authorization token' });
+            return;
+        }
+        if(!csrfCookie || !csrfQuery){
+            res.status(400).json({ message: 'CSRF must be provided in cookie and query' });;
+            return;
+        }
+        if(csrfCookie !== csrfQuery){
+            res.status(400).json({ message: 'CSRF doesnt match' });
             return;
         }
         try{

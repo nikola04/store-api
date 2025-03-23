@@ -5,5 +5,6 @@ declare namespace NodeJS {
         PORT: string;
         MONGODB_URI: string;
         ALLOWED_ORIGINS: string;
+        STEAM_API_KEY: string;
     }
 }
