@@ -1,5 +1,5 @@
 import { logoutUser } from '@/services/auth.service';
-import { getTokenByValue, TokenError } from '@/services/token.service';
+import { getSessionByToken, SessionError } from '@/services/session.service';
 import { authHandler } from '@/utils/auth';
 import { removeRefreshTokenCookie } from '@/utils/authCookies';
 import { hashRefreshTokenData } from 'easy-token-auth';
@@ -15,14 +15,14 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 
         const rawValue = authHandler.decodeToken(refreshToken);
         const hashedValue = hashRefreshTokenData(rawValue);
-        const token = await getTokenByValue(hashedValue);
+        const session = await getSessionByToken(hashedValue);
 
-        await logoutUser(String(token._id));
+        await logoutUser(session._id.toString());
 
         removeRefreshTokenCookie(res);
         res.json({ status: 'OK' });
     }catch(err){
-        if(err === TokenError.NOT_FOUND){
+        if(err === SessionError.NOT_FOUND){
             res.status(404).json({ message: 'User logged out' });
         }else{
             res.status(500).json({ message: 'Internal server error' });

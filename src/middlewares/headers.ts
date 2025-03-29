@@ -1,4 +1,4 @@
-import { createDeviceFromUA } from '@/utils/helpers';
+import { createDevice } from '@/utils/device';
 import { NextFunction, Request, Response } from 'express';
 
 export const extractHeaders = ({ device = false, authorization = false }) => {
@@ -23,9 +23,9 @@ const extractDeviceHeaders = (req: Request): Device => {
     const ip = req.ip;
     try{
         const userAgent = req.get('User-Agent') ?? 'not-provided';
-        const device = createDeviceFromUA(userAgent);
+        const device = createDevice(userAgent);
         return ({ ...device, ip });
     }catch(_e){
-        return ({ user_agent: 'not-provided', type: undefined, vendor: undefined, model: undefined, ip });
+        return ({ user_agent: 'not-provided', name: undefined, type: undefined, os: undefined, app: undefined, ip });
     }
 };

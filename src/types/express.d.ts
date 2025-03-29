@@ -1,8 +1,12 @@
+type DeviceType = 'Desktop'|'Mobile'|'Tablet'|'SmartTV'|'Console'|'Embedded'|'Wearable'|'XR'
+type DeviceOS = 'MacOS'|'Windows'|'IOS'|'Android'|'Linux'|'ChromeOS'|'Linux'|'Playstation'|'Nintendo'|'Xbox'
+
 interface Device {
     user_agent: string;
-    type?: string;
-    vendor?: string;
-    model?: string;
+    name?: string;
+    type?: DeviceType;
+    os?: DeviceOS;
+    app?: string;
     ip?: string;
 }
 

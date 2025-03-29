@@ -1,4 +1,4 @@
-import { Location } from '@/models/login.types';
+import { Location } from '@/models/session.types';
 
 export const getIpLocation = async (ip?: string): Promise<Location | null> => {
     if(!ip) return null;
