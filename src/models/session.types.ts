@@ -7,7 +7,7 @@ export interface Location {
     country?: string;
 }
 
-export interface Session {
+export interface ISession {
     _id: ObjectId;
     user_id: Schema.Types.ObjectId;
     device_id: Schema.Types.ObjectId;

@@ -1,11 +1,12 @@
 import { UserModel } from '@/models/user.model';
-import { User, UserData } from '@/models/user.types';
+import { IUser, UserData } from '@/models/user.types';
 import { authHandler } from '@/utils/auth';
 import { toUserData } from '@/utils/helpers';
 import bcrypt from 'bcrypt';
 import { logoutSessionById, saveSession, updateOrSaveSession, updateSessionTokenById } from './session.service';
 import { logoutDeviceBySessionId, updateDeviceLastSessionById } from './device.service';
 import { getLocationByIp } from './ip.service';
+import { saveLoginActivity } from './activity.service';
 
 export enum LoginError {
     EMAIL_NOT_FOUND = 'email_not_found',
@@ -32,6 +33,7 @@ export const loginUser = async (email: string, password: string, { deviceId, use
     const session = await updateOrSaveSession(user.id, deviceId, hashedToken, userIp, location);
     const oldDevice = await updateDeviceLastSessionById(deviceId, session._id.toString(), user.id);
     if(oldDevice && oldDevice.last_session_id && oldDevice.last_session_id.toString() !== session._id.toString()) await logoutSessionById(oldDevice.last_session_id.toString()); // in case last session didnt logout properly (if existed)
+    await saveLoginActivity(user.id, deviceId, session._id.toString());
 
     return ({
         user: toUserData(user),
@@ -61,7 +63,7 @@ export const registerUser = async (name: string, email: string, password: string
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const user: User = await UserModel.create({ name, email, hashed_pswd: hashedPassword });
+    const user: IUser = await UserModel.create({ name, image: null, email, hashed_pswd: hashedPassword });
 
     const { access_token, refresh_token, hashed_token: hashedToken } = generateTokens(user.id);
 

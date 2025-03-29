@@ -2,7 +2,7 @@ import { getUserById, UserError } from '@/services/user.service';
 import { isAuthenticatedRequest } from '@/utils/validators';
 import { Request, Response } from 'express';
 
-export const currentUser = async (req: Request, res: Response): Promise<void> => {
+export const currentUserController = async (req: Request, res: Response): Promise<void> => {
     if (!isAuthenticatedRequest(req)) {
         res.status(401).json({ message: 'User not authenticated' });
         return;

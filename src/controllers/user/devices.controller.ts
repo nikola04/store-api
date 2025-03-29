@@ -1,11 +1,12 @@
-import { Session } from '@/models/session.types';
+import { ISession } from '@/models/session.types';
 import { getDevicesByIds } from '@/services/device.service';
 import { getSessionsByUserId } from '@/services/session.service';
+import { friendlyFormatDevice } from '@/utils/device';
 import { decodeFingerprintJWT } from '@/utils/fingerprint';
 import { isAuthenticatedRequest } from '@/utils/validators';
 import { Request, Response } from 'express';
 
-export const devicesByUserId = async (req: Request, res: Response): Promise<void> => {
+export const userDevicesController = async (req: Request, res: Response): Promise<void> => {
     if (!isAuthenticatedRequest(req)) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
@@ -21,16 +22,7 @@ export const devicesByUserId = async (req: Request, res: Response): Promise<void
         const devices = await getDevicesByIds(devicesIds);
         const formated = devices.map(device => {
             const lastSession = getLastSession(sessions, device._id.toString());
-            return ({
-                id: device._id,
-                name: device.name,
-                type: device.type,
-                os: device.os,
-                app: device.app,
-                logged_out: lastSession?.logged_out ?? true,
-                current_device: fingerprint === device.fingerprint,
-                last_login: lastSession?.login_date || null
-            });
+            return friendlyFormatDevice(device, lastSession?.logged_out ?? true, fingerprint === device.fingerprint, lastSession?.login_date || null);
         });
         res.json({ status: 'OK', devices: formated });
     }catch(err){
@@ -39,8 +31,8 @@ export const devicesByUserId = async (req: Request, res: Response): Promise<void
     }
 };
 
-const getLastSession = (sessions: Session[], deviceId: string): Session|null => {
-    let last_session: Session|null = null;
+const getLastSession = (sessions: ISession[], deviceId: string): ISession|null => {
+    let last_session: ISession|null = null;
     sessions.forEach(s => {
         if(s.device_id.toString() !== deviceId) return;
         if(!last_session || last_session.login_date < s.login_date) last_session = s;

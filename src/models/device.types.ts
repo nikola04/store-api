@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 
-export interface Device {
+export interface IDevice {
     _id: ObjectId;
     name?: string;
     type?: DeviceType;

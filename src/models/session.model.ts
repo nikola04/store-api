@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { Session } from './session.types';
+import { ISession } from './session.types';
 
-const sessionSchema = new Schema<Session>({
+const sessionSchema = new Schema<ISession>({
     user_id: { type: Schema.Types.ObjectId, required: true },
     device_id: { type: Schema.Types.ObjectId, required: true },
     ip: { type: String, default: undefined },

@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { Device } from './device.types';
+import { IDevice } from './device.types';
 
-const deviceSchema = new Schema<Device>({
+const deviceSchema = new Schema<IDevice>({
     fingerprint: { type: String, required: true },
     name: { type: String, default: null },
     type: { type: String, default: null },

@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { IOS, UAParser } from 'ua-parser-js';
 import { decodeFingerprintJWT } from './fingerprint';
 import { DeviceError, getDeviceByFingerprint, saveDevice } from '@/services/device.service';
-import { Device as SavedDevice } from '@/models/device.types';
+import { IDevice, IDevice as SavedDevice } from '@/models/device.types';
 
 export const createFingerprint = (): string => {
     return crypto.randomBytes(64).toString('hex');
@@ -96,3 +96,14 @@ export const getOrSignDevice = async (token: string|undefined|null, device: Devi
     const savedDevice = await saveDevice(newFingerprint, device.name, device.type, device.os, device.app);
     return ({ device: savedDevice, signed: true });
 };
+
+export const friendlyFormatDevice = (device: IDevice, loggedOut: boolean, currentDevice: boolean, lastLogin: Date|null) => ({
+    id: device._id,
+    name: device.name,
+    type: device.type,
+    os: device.os,
+    app: device.app,
+    logged_out: loggedOut,
+    current_device: currentDevice,
+    last_login: lastLogin
+});

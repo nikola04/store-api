@@ -1,8 +1,8 @@
 import { authConfig } from '@/utils/auth';
 import { SessionModel } from '@/models/session.model';
-import { Location, Session } from '@/models/session.types';
+import { Location, ISession } from '@/models/session.types';
 
-export const saveSession = async (userId: string, deviceId: string, refreshToken: string, ip: string|undefined, location: Location|null): Promise<Session> => {
+export const saveSession = async (userId: string, deviceId: string, refreshToken: string, ip: string|undefined, location: Location|null): Promise<ISession> => {
     return await SessionModel.create({
         user_id: userId,
         device_id: deviceId,
@@ -13,7 +13,7 @@ export const saveSession = async (userId: string, deviceId: string, refreshToken
     });
 };
 
-export const updateOrSaveSession = async (userId: string, deviceId: string, refreshToken: string, ip: string|undefined, location: Location|null): Promise<Session> => {
+export const updateOrSaveSession = async (userId: string, deviceId: string, refreshToken: string, ip: string|undefined, location: Location|null): Promise<ISession> => {
     return await SessionModel.findOneAndUpdate({ user_id: userId, device_id: deviceId }, { $set: {
         ip,
         location,
@@ -28,12 +28,12 @@ export const updateOrSaveSession = async (userId: string, deviceId: string, refr
 export enum SessionError {
     NOT_FOUND = 'NOT_FOUND'
 }
-export const getSessionByToken = async (refreshToken: string): Promise<Session> => {
+export const getSessionByToken = async (refreshToken: string): Promise<ISession> => {
     const session = await SessionModel.findOne({ refresh_token: refreshToken }).lean();
     if(!session) throw SessionError.NOT_FOUND;
     return session;
 };
-export const getSessionsByUserId = async (userId: string): Promise<Session[]> => {
+export const getSessionsByUserId = async (userId: string): Promise<ISession[]> => {
     return await SessionModel.find({ user_id: userId }).lean();
 };
 
