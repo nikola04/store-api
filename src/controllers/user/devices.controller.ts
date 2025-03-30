@@ -22,7 +22,7 @@ export const userDevicesController = async (req: Request, res: Response): Promis
         const devices = await getDevicesByIds(devicesIds);
         const formated = devices.map(device => {
             const lastSession = getLastSession(sessions, device._id.toString());
-            return friendlyFormatDevice(device, lastSession?.logged_out ?? true, fingerprint === device.fingerprint, lastSession?.login_date || null);
+            return friendlyFormatDevice(device, lastSession?.logged_out ?? true, fingerprint === device.fingerprint, lastSession?.login_date || null, lastSession?.location || null);
         });
         res.json({ status: 'OK', devices: formated });
     }catch(err){
