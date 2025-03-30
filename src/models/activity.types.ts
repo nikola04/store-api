@@ -9,6 +9,6 @@ export interface IActivity {
     device_id: ObjectId;
     type: Activity;
     login_session_id?: ObjectId;
-    approved: boolean;
+    approved: boolean|null;
     created_at: Date;
 }

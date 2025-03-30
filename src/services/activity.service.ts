@@ -10,6 +10,16 @@ export const saveLoginActivity = async (userId: string, deviceId: string, sessio
     });
 };
 
-export const getLatestUserActivities = async (userId: string, { limit }: { limit: number }): Promise<IActivity[]> => {
-    return await ActivityModel.find({ user_id: userId }).sort({ created_at: -1 }).limit(limit).lean();
+export const getLatestUserActivities = async (userId: string, { limit, after }: { limit: number, after?: Date }): Promise<IActivity[]> => {
+    const beforeFilter = after ? { created_at: { $gt: after } } : { };
+    return await ActivityModel.find({ user_id: userId, ...beforeFilter }).sort({ created_at: -1 }).limit(limit).lean();
+};
+
+export enum ActivityError{
+    NOT_FOUND = 'NOT_FOUND',
+}
+export const getActivityById = async (id: string): Promise<IActivity> => {
+    const activity = await ActivityModel.findById(id).lean();
+    if(!activity) throw ActivityError.NOT_FOUND;
+    return activity;
 };

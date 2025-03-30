@@ -28,6 +28,11 @@ export const updateOrSaveSession = async (userId: string, deviceId: string, refr
 export enum SessionError {
     NOT_FOUND = 'NOT_FOUND'
 }
+export const getSessionById = async (id: string): Promise<ISession> => {
+    const session = await SessionModel.findById(id).lean();
+    if(!session) throw SessionError.NOT_FOUND;
+    return session;
+};
 export const getSessionByToken = async (refreshToken: string): Promise<ISession> => {
     const session = await SessionModel.findOne({ refresh_token: refreshToken }).lean();
     if(!session) throw SessionError.NOT_FOUND;
