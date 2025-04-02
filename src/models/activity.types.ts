@@ -9,6 +9,8 @@ export interface IActivity {
     device_id: ObjectId;
     type: Activity;
     login_session_id?: ObjectId;
+    location?: Location;
+    ip?: string;
     approved: boolean|null;
     created_at: Date;
 }

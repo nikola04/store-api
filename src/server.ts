@@ -13,7 +13,7 @@ app.set('trust proxy', true);
 const origins = getAllowedOrigins();
 app.use(cors({
     origin: origins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));

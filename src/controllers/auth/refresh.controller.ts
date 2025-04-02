@@ -14,7 +14,6 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
         const rawValue = await authHandler.verifyAndDecodeToken(originalRefreshToken);
         const tokenValue = hashRefreshTokenData(rawValue);
         const session = await getSessionByToken(tokenValue);
-
         if(!session){
             res.status(401).json({ message: 'Not successfull' });
             return;
@@ -48,6 +47,7 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
             res.status(401).json({ message: 'Invalid token or expired key' });
         }else {
             res.status(500).json({ message: 'Internal server error' });
+            console.error('refresh controller error', err);
         }
     }
 };

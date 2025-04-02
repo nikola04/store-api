@@ -13,7 +13,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         const deviceId = device._id.toString();
         const { user, access_token, refresh_token: refreshToken } = await loginUser(email, password, {
             deviceId,
-            userIp: '87.116.164.203' // req.device.ip
+            userIp: req.device.ip
         });
 
         if(signed) setFingerprintTokenCookie(res, signFingerprintJWT(device.fingerprint));

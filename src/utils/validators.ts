@@ -1,5 +1,5 @@
 import { AuthenticatedRequest } from '@/middlewares/authenticate';
-import { Location } from '@/models/login.types';
+import { Location } from '@/models/session.types';
 import { Request } from 'express';
 
 export const verifyName = (name: string): boolean => {
@@ -34,4 +34,10 @@ export const isLocation = (data: unknown): data is Location => {
     const hasValidCountry = location.country === undefined || typeof location.country === 'string';
 
     return hasValidLat && hasValidLon && hasValidCity && hasValidCountry;
+};
+
+export const getParamBooleanValue = (param: unknown): boolean|null => {
+    if(param === 'true' || param === true) return true;
+    if(param === 'false' || param === false) return false;
+    return null;
 };

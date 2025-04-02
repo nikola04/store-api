@@ -98,7 +98,8 @@ export const getOrSignDevice = async (token: string|undefined|null, device: Devi
     return ({ device: savedDevice, signed: true });
 };
 
-export const friendlyFormatDevice = (device: IDevice, loggedOut: boolean, currentDevice: boolean, lastLogin: Date|null, lastLocation: Location|null) => ({
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const friendlyFormatDevice = (device: IDevice, loggedOut: boolean, currentDevice: boolean, lastSession: string|null, lastLoginDate: Date|null, lastIp: string|null, lastLocation: Location|null) => ({
     id: device._id,
     name: device.name,
     type: device.type,
@@ -106,6 +107,8 @@ export const friendlyFormatDevice = (device: IDevice, loggedOut: boolean, curren
     app: device.app,
     logged_out: loggedOut,
     current_device: currentDevice,
-    last_login: lastLogin,
+    last_session_id: lastSession,
+    last_login_date: lastLoginDate,
+    last_login_ip: lastIp,
     last_login_location: lastLocation,
 });

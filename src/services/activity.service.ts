@@ -1,12 +1,15 @@
 import { ActivityModel } from '@/models/activity.model';
 import { Activity, IActivity } from '@/models/activity.types';
+import { Location } from '@/models/session.types';
 
-export const saveLoginActivity = async (userId: string, deviceId: string, sessionId: string): Promise<IActivity> => {
+export const saveLoginActivity = async (userId: string, deviceId: string, sessionId: string, location?: Location, ip?: string): Promise<IActivity> => {
     return await ActivityModel.create({
         user_id: userId,
         device_id: deviceId,
         type: Activity.LOGIN,
-        login_session_id: sessionId
+        login_session_id: sessionId,
+        location: location,
+        ip: ip
     });
 };
 
@@ -17,9 +20,16 @@ export const getLatestUserActivities = async (userId: string, { limit, after }: 
 
 export enum ActivityError{
     NOT_FOUND = 'NOT_FOUND',
+    NOT_UPDATED = 'NOT_UPDATED'
 }
 export const getActivityById = async (id: string): Promise<IActivity> => {
     const activity = await ActivityModel.findById(id).lean();
     if(!activity) throw ActivityError.NOT_FOUND;
     return activity;
+};
+
+export const approveActivityById = async (id: string, approved: boolean): Promise<void> => {
+    const result = await ActivityModel.updateOne({ _id: id }, { $set: { approved: approved } });
+    if(result.modifiedCount !== 1) throw ActivityError.NOT_UPDATED;
+    return;
 };

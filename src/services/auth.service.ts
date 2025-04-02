@@ -33,7 +33,7 @@ export const loginUser = async (email: string, password: string, { deviceId, use
     const session = await updateOrSaveSession(user.id, deviceId, hashedToken, userIp, location);
     const oldDevice = await updateDeviceLastSessionById(deviceId, session._id.toString(), user.id);
     if(oldDevice && oldDevice.last_session_id && oldDevice.last_session_id.toString() !== session._id.toString()) await logoutSessionById(oldDevice.last_session_id.toString()); // in case last session didnt logout properly (if existed)
-    await saveLoginActivity(user.id, deviceId, session._id.toString());
+    await saveLoginActivity(user.id, deviceId, session._id.toString(), location ?? undefined, userIp);
 
     return ({
         user: toUserData(user),

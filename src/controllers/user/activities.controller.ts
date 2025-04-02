@@ -1,8 +1,7 @@
-import { getActivityById, getLatestUserActivities } from '@/services/activity.service';
+import { ActivityError, approveActivityById, getActivityById, getLatestUserActivities } from '@/services/activity.service';
 import { getDeviceById, getDevicesByIds } from '@/services/device.service';
-import { getSessionById } from '@/services/session.service';
 import { decodeFingerprintJWT } from '@/utils/fingerprint';
-import { isAuthenticatedRequest } from '@/utils/validators';
+import { getParamBooleanValue, isAuthenticatedRequest } from '@/utils/validators';
 import { Request, Response } from 'express';
 
 export const userActivitiesController = async (req: Request, res: Response): Promise<void> => {
@@ -36,6 +35,8 @@ export const userActivitiesController = async (req: Request, res: Response): Pro
                 device,
                 type: activity.type,
                 login_session_id: activity.login_session_id,
+                ip: activity.ip,
+                location: activity.location,
                 approved: activity.approved,
                 created_at: activity.created_at
             });
@@ -43,7 +44,7 @@ export const userActivitiesController = async (req: Request, res: Response): Pro
         res.json({ status: 'OK', activities: formated });
     }catch(err){
         res.status(500).json({ message: 'Internal server error' });
-        console.error('user logins controller error', err);
+        console.error('user activities controller error', err);
     }
 };
 
@@ -53,18 +54,10 @@ export const userActivityByIdController = async (req: Request, res: Response): P
         return;
     }
     try{
-        const id = req.params.id as string;
+        const id = req.params.id;
         const activity = await getActivityById(id);
         const fingerprint = decodeFingerprintJWT(req.cookies.fingerprint);
-        const [device, _session] = await Promise.all([
-            getDeviceById(activity.device_id.toString()),
-            activity.login_session_id ? await getSessionById(activity.login_session_id.toString()) : null
-        ]);
-        const session = _session ? ({
-            ip: _session.ip,
-            location: _session.location,
-        }) : undefined;
-
+        const device = await getDeviceById(activity.device_id.toString());
         const formated = ({
             id: activity._id,
             device_id: activity.device_id,
@@ -77,13 +70,41 @@ export const userActivityByIdController = async (req: Request, res: Response): P
             },
             type: activity.type,
             login_session_id: activity.login_session_id,
-            session,
+            ip: activity.ip,
+            location: activity.location,
             approved: activity.approved,
             created_at: activity.created_at
         });
         res.json({ status: 'OK', activity: formated });
     }catch(err){
-        res.status(500).json({ message: 'Internal server error' });
-        console.error('user logins controller error', err);
+        if(err === ActivityError.NOT_FOUND){
+            res.status(404).json({ message: 'Can\'t find activity.' });
+        }else{
+            res.status(500).json({ message: 'Internal server error' });
+            console.error('user activity controller error', err);
+        }
+    }
+};
+
+export const approveActivityController = async (req: Request, res: Response): Promise<void> => {
+    if (!isAuthenticatedRequest(req)) {
+        res.status(401).json({ message: 'User not authenticated' });
+        return;
+    }
+    try{
+        const id = req.params.id;
+        const approve = getParamBooleanValue(req.body.approve);
+        if(approve === null) throw 'APPROVE_NOT_BOOL';
+        await approveActivityById(id, approve);
+        res.json({ status: 'OK' });
+    }catch(err){
+        if(err === 'APPROVE_NOT_BOOL'){
+            res.status(400).json({ message: 'Param approve is not valid boolean' });
+        }else if(err === ActivityError.NOT_UPDATED){
+            res.status(404).json({ message: 'Error while updating document.' });
+        }else{
+            res.status(500).json({ message: 'Internal server error' });
+            console.error('user activity controller error', err);
+        }
     }
 };
