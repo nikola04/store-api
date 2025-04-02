@@ -18,6 +18,6 @@ export const logoutSessionController = async (req: Request, res: Response): Prom
         res.json({ status: 'OK' });
     }catch(err){
         res.status(500).json({ message: 'Internal server error' });
-        console.error('logoutSession controller error', err);
+        console.error('account logout session controller error', err);
     }
 };

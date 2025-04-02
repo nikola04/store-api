@@ -1,4 +1,5 @@
 import { getUserById, UserError } from '@/services/user.service';
+import { toUserData } from '@/utils/helpers';
 import { isAuthenticatedRequest } from '@/utils/validators';
 import { Request, Response } from 'express';
 
@@ -9,7 +10,7 @@ export const currentUserController = async (req: Request, res: Response): Promis
     }
     try{
         const user = await getUserById(req.user.id);
-        res.json({ status: 'OK', user });
+        res.json({ status: 'OK', user: toUserData(user) });
     }catch(err){
         if(err === UserError.NOT_FOUND){
             res.status(404).json({ message: 'User not found' });
@@ -29,7 +30,7 @@ export const userByIdController = async (req: Request, res: Response): Promise<v
     }
     try{
         const user = await getUserById(req.params.id);
-        res.json({ status: 'OK', user });
+        res.json({ status: 'OK', user: toUserData(user) });
     }catch(err){
         if(err === UserError.NOT_FOUND){
             res.status(404).json({ message: 'User not found' });

@@ -6,7 +6,7 @@ import { decodeFingerprintJWT } from '@/utils/fingerprint';
 import { isAuthenticatedRequest } from '@/utils/validators';
 import { Request, Response } from 'express';
 
-export const userDevicesController = async (req: Request, res: Response): Promise<void> => {
+export const accountDevicesController = async (req: Request, res: Response): Promise<void> => {
     if (!isAuthenticatedRequest(req)) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
@@ -27,11 +27,11 @@ export const userDevicesController = async (req: Request, res: Response): Promis
         res.json({ status: 'OK', devices: formated });
     }catch(err){
         res.status(500).json({ message: 'Internal server error' });
-        console.error('user devices controller error', err);
+        console.error('account devices controller error', err);
     }
 };
 
-export const userDeviceByIdController = async (req: Request, res: Response): Promise<void> => {
+export const accountDeviceByIdController = async (req: Request, res: Response): Promise<void> => {
     if (!isAuthenticatedRequest(req)) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
@@ -49,7 +49,7 @@ export const userDeviceByIdController = async (req: Request, res: Response): Pro
             res.status(404).json({ message: 'Can\'t find device' });
         }else{
             res.status(500).json({ message: 'Internal server error' });
-            console.error('user device controller error', err);
+            console.error('account device controller error', err);
         }
     }
 };

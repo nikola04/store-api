@@ -1,5 +1,5 @@
 import { UserModel } from '@/models/user.model';
-import { IUser, UserData } from '@/models/user.types';
+import { UserData } from '@/models/user.types';
 import { authHandler } from '@/utils/auth';
 import { toUserData } from '@/utils/helpers';
 import bcrypt from 'bcrypt';
@@ -7,6 +7,8 @@ import { logoutSessionById, saveSession, updateOrSaveSession, updateSessionToken
 import { logoutDeviceBySessionId, updateDeviceLastSessionById } from './device.service';
 import { getLocationByIp } from './ip.service';
 import { saveLoginActivity } from './activity.service';
+import { AccountModel } from '@/models/account.model';
+import { getAccountByUserId } from './account.service';
 
 export enum LoginError {
     EMAIL_NOT_FOUND = 'email_not_found',
@@ -21,7 +23,8 @@ export const loginUser = async (email: string, password: string, { deviceId, use
     const user = await UserModel.findOne({ email });
     if(!user) throw LoginError.EMAIL_NOT_FOUND;
 
-    const hashedPswd: string|null = user.hashed_pswd;
+    const account = await getAccountByUserId(user._id, '+hashed_pswd');
+    const hashedPswd: string|null = account?.hashed_pswd ?? null;
     if(!hashedPswd) throw LoginError.NO_PASSWORD;
 
     const isPasswordValid = await bcrypt.compare(password, hashedPswd);
@@ -63,7 +66,10 @@ export const registerUser = async (name: string, email: string, password: string
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const user: IUser = await UserModel.create({ name, image: null, email, hashed_pswd: hashedPassword });
+    const user = await UserModel.create({ name, image: null, email });
+    const account = await AccountModel.create({ user_id: user._id, hashed_pswd: hashedPassword });
+    user.account_id = account._id;
+    await user.save();
 
     const { access_token, refresh_token, hashed_token: hashedToken } = generateTokens(user.id);
 

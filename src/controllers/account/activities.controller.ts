@@ -4,7 +4,7 @@ import { decodeFingerprintJWT } from '@/utils/fingerprint';
 import { getParamBooleanValue, isAuthenticatedRequest } from '@/utils/validators';
 import { Request, Response } from 'express';
 
-export const userActivitiesController = async (req: Request, res: Response): Promise<void> => {
+export const accountActivitiesController = async (req: Request, res: Response): Promise<void> => {
     if (!isAuthenticatedRequest(req)) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
@@ -44,11 +44,11 @@ export const userActivitiesController = async (req: Request, res: Response): Pro
         res.json({ status: 'OK', activities: formated });
     }catch(err){
         res.status(500).json({ message: 'Internal server error' });
-        console.error('user activities controller error', err);
+        console.error('account activities controller error', err);
     }
 };
 
-export const userActivityByIdController = async (req: Request, res: Response): Promise<void> => {
+export const accountActivityByIdController = async (req: Request, res: Response): Promise<void> => {
     if (!isAuthenticatedRequest(req)) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
@@ -81,7 +81,7 @@ export const userActivityByIdController = async (req: Request, res: Response): P
             res.status(404).json({ message: 'Can\'t find activity.' });
         }else{
             res.status(500).json({ message: 'Internal server error' });
-            console.error('user activity controller error', err);
+            console.error('account activity controller error', err);
         }
     }
 };
@@ -104,7 +104,7 @@ export const approveActivityController = async (req: Request, res: Response): Pr
             res.status(404).json({ message: 'Error while updating document.' });
         }else{
             res.status(500).json({ message: 'Internal server error' });
-            console.error('user activity controller error', err);
+            console.error('account approve activity controller error', err);
         }
     }
 };
