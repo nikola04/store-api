@@ -6,5 +6,7 @@ declare namespace NodeJS {
         MONGODB_URI: string;
         ALLOWED_ORIGINS: string;
         STEAM_API_KEY: string;
+        GOOGLE_EMAIL: string;
+        GOOGLE_PSWD: string;
     }
 }

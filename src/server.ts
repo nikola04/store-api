@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { getAllowedOrigins } from './utils/cors';
 import { extractHeaders } from './middlewares/headers';
 import { connect } from './configs/database';
+import { verifySMTP } from './configs/mailer';
 
 const app = express();
 
@@ -27,6 +28,7 @@ const startServer = async (): Promise<void> => {
     console.log('> Starting server...');
     try {
         await connect().then(() => console.log('> Database conected successfully.'));
+        await verifySMTP().then(() => console.log('> SMTP connected successfully.'));
         if(!process.env.PORT) throw 'PORT is not defined in ENV variables.';
         app.listen(process.env.PORT, () => console.log('> Server is listening on', `\x1b[34mhttp://localhost:${process.env.PORT}/\x1b[0m`));
     } catch (error) {

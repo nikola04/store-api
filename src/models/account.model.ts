@@ -19,7 +19,7 @@ const PasskeySubschema = new Schema<IPasskey>({
 });
 
 const accountSchema = new Schema<IAccount>({
-    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    user_id: { type: Schema.Types.ObjectId, ref: 'users', required: true, unique: true },
     verified_email: { type: Boolean, default: false },
     hashed_pswd: { type: String, select: false, default: null },
     two_factor_auth: { type: Boolean, default: false },

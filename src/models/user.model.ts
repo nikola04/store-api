@@ -2,7 +2,7 @@ import { model, Schema } from 'mongoose';
 import { IUser } from './user.types';
 
 const userSchema = new Schema<IUser>({
-    account_id: { type: Schema.Types.ObjectId, default: null, ref: 'Account' },
+    account_id: { type: Schema.Types.ObjectId, default: null, ref: 'accounts' },
     name: { type: String, default: null, trim: true },
     image: { type: String, default: null },
     email: { type: String, trim: true, required: true },

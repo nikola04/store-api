@@ -59,7 +59,7 @@ export const verifyPasskeyRegistration = async (userId: string, attestationRespo
 
     const passkeyName = 'New Passkey';
     const newPasskey: IPasskey = ({
-        credential_id: credentialID,
+        credential_id: base64url.encode(credentialID),
         credential_public_key: base64url.encode(Buffer.from(credentialPublicKey)),
         counter,
         name: passkeyName,

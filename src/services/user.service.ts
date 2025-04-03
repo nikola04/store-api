@@ -11,3 +11,10 @@ export const getUserById = async (userId: string): Promise<IUser> => {
     if(user.deleted) throw UserError.DELETED;
     return user;
 };
+
+export const getUserByEmail = async (email: string): Promise<IUser> => {
+    const user = await UserModel.findOne({ email: email }).lean();
+    if(!user) throw UserError.NOT_FOUND;
+    if(user.deleted) throw UserError.DELETED;
+    return user;
+};

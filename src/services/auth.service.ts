@@ -1,5 +1,5 @@
 import { UserModel } from '@/models/user.model';
-import { UserData } from '@/models/user.types';
+import { IUser, UserData } from '@/models/user.types';
 import { authHandler } from '@/utils/auth';
 import { toUserData } from '@/utils/helpers';
 import bcrypt from 'bcrypt';
@@ -8,22 +8,30 @@ import { logoutDeviceBySessionId, updateDeviceLastSessionById } from './device.s
 import { getLocationByIp } from './ip.service';
 import { saveLoginActivity } from './activity.service';
 import { AccountModel } from '@/models/account.model';
-import { getAccountByUserId } from './account.service';
+import { IAccount } from '@/models/account.types';
+import { AuthenticationResponseJSON, verifyAuthenticationResponse } from '@simplewebauthn/server';
+import { AppConfig } from '@/configs/app';
+import { getAllowedOrigins } from '@/utils/cors';
+import base64url from 'base64url';
 
 export enum LoginError {
     EMAIL_NOT_FOUND = 'email_not_found',
     NO_PASSWORD = 'no_password',
-    INVALID_PASSWORD = 'invalid_password'
+    INVALID_PASSWORD = 'invalid_password',
+    NO_CHALLENGE = 'no_challenge',
+    NOT_REGISTERED_PASSKEY = 'not_registered_passkey',
+    VERIFICATION_ERROR = 'not_verified'
 }
-export const loginUser = async (email: string, password: string, { deviceId, userIp }: { deviceId: string, userIp?: string }): Promise<{
+interface LoginResponse {
     user: UserData;
     access_token: string;
     refresh_token: string;
-}> => {
-    const user = await UserModel.findOne({ email });
-    if(!user) throw LoginError.EMAIL_NOT_FOUND;
+}
 
-    const account = await getAccountByUserId(user._id, '+hashed_pswd');
+export const passwordLoginUser = async (email: string, password: string, { deviceId, userIp }: { deviceId: string, userIp?: string }): Promise<LoginResponse> => {
+    const user = await UserModel.findOne({ email }).populate<{ account_id: IAccount }>('account_id', '+hashed_pswd');
+    if(!user) throw LoginError.EMAIL_NOT_FOUND;
+    const account = user.account_id;
     const hashedPswd: string|null = account?.hashed_pswd ?? null;
     if(!hashedPswd) throw LoginError.NO_PASSWORD;
 
@@ -39,7 +47,43 @@ export const loginUser = async (email: string, password: string, { deviceId, use
     await saveLoginActivity(user.id, deviceId, session._id.toString(), location ?? undefined, userIp);
 
     return ({
-        user: toUserData(user),
+        user: toUserData(user as unknown as IUser),
+        access_token,
+        refresh_token
+    });
+};
+
+export const passkeyLoginController = async (email: string, response: AuthenticationResponseJSON, { deviceId, userIp }: { deviceId: string, userIp?: string }): Promise<LoginResponse> => {
+    const user = await UserModel.findOne({ email }).populate<{ account_id: IAccount }>('account_id', '+passkey_challenge');
+    if(!user) throw LoginError.EMAIL_NOT_FOUND;
+    const account = user.account_id;
+    if(!account.passkey_challenge) throw LoginError.NO_CHALLENGE;
+
+    const passkey = account.passkeys.find(p => p.credential_id === response.id);
+    if (!passkey) throw LoginError.NOT_REGISTERED_PASSKEY;
+
+    const verification = await verifyAuthenticationResponse({
+        response,
+        expectedChallenge: account.passkey_challenge,
+        expectedRPID: AppConfig.rpID,
+        expectedOrigin: getAllowedOrigins()[0],
+        credential: {
+            id: passkey.credential_id,
+            publicKey: base64url.toBuffer(passkey.credential_public_key),
+            counter: passkey.counter
+        }
+    });
+    if(!verification.verified) throw LoginError.VERIFICATION_ERROR;
+    const { access_token, refresh_token, hashed_token: hashedToken } = generateTokens(user.id);
+
+    const location = userIp ? await getLocationByIp(userIp) : null;
+    const session = await updateOrSaveSession(user.id, deviceId, hashedToken, userIp, location);
+    const oldDevice = await updateDeviceLastSessionById(deviceId, session._id.toString(), user.id);
+    if(oldDevice && oldDevice.last_session_id && oldDevice.last_session_id.toString() !== session._id.toString()) await logoutSessionById(oldDevice.last_session_id.toString()); // in case last session didnt logout properly (if existed)
+    await saveLoginActivity(user.id, deviceId, session._id.toString(), location ?? undefined, userIp);
+
+    return ({
+        user: toUserData(user as unknown as IUser),
         access_token,
         refresh_token
     });
